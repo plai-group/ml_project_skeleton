@@ -1,0 +1,17 @@
+torch
+torchvision
+tensorflow
+tqdm
+numpy
+pandas
+sklearn
+scipy
+matplotlib
+seaborn
+networkx
+psutil
+requests
+ipdb
+jupyter
+git+http://github.com/vmasrani/skeletor.git#egg=skeletor
+git+http://github.com/vmasrani/track.git#egg=track
