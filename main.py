@@ -40,7 +40,7 @@ def init(seed, config, _run):
     return args
 
 
-# Send metric to server
+# Send metric to database
 @ex.capture
 def log_scalar(name, scalar, step=None, _run=None):
     assert np.isscalar(scalar) # Tensors, numpy arrays, etc wont work
