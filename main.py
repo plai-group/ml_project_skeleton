@@ -2,8 +2,10 @@ import sacred
 import numpy as np
 from types import SimpleNamespace
 from src.utils import seed_all, print_settings
-from src import db
-ex = db.init()
+
+import db
+from sacred import Experiment
+ex = db.init(Experiment())
 
 @ex.config
 def my_config():
@@ -31,7 +33,8 @@ def init(seed, config, _run):
     args.seed = seed
 
     # Print run settings
-    print_settings(args)
+    # (Better to use sacred's -p flag)
+    # print_settings(args)
 
     # This gives global access to sacred's '_run' object without having to capture functions
     args._run = _run
