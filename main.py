@@ -2,8 +2,7 @@ import sacred
 import numpy as np
 from types import SimpleNamespace
 from src.utils import seed_all, print_settings
-
-import db
+from src import db
 from sacred import Experiment
 ex = db.init(Experiment())
 
