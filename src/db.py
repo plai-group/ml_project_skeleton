@@ -18,7 +18,7 @@ DATABASE_MACHINE  = 'headnode'
 DATABASE_SERVER   = 'submit.cs.ubc.ca'
 
 # Note: This assumes you have password-free access via public keys
-REMOTE_SERVER   = 'remote.cs.ubc.ca'
+REMOTE_SERVER          = 'remote.cs.ubc.ca'
 REMOTE_SERVER_USERNAME = 'vadmas'
 
 MONGO_URI = "mongodb://{}:{}@{}:{}/{}".format(DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_SERVER, DATABASE_PORT, DATABASE_NAME)
@@ -52,8 +52,9 @@ def open_ssh():
     open_port = find_open_port()
     print("Opening ssh tunnel on port:", open_port)
     p = subprocess.Popen(['ssh -N -L {}:{}:{} {}@{}'.format(open_port, DATABASE_MACHINE, DATABASE_PORT, REMOTE_SERVER_USERNAME, REMOTE_SERVER)], shell=True)
+    print('ssh -N -L {}:{}:{} {}@{}'.format(open_port, DATABASE_MACHINE, DATABASE_PORT, REMOTE_SERVER_USERNAME, REMOTE_SERVER))
     ssh_mongo_uri = LOCAL_URI.replace(DATABASE_PORT, open_port)
-    sleep(2)  # Give the tunnel a second to connect
+    sleep(1)  # Give the tunnel a second to connect
     atexit.register(p.kill)
     assert test_connection(ssh_mongo_uri), "Error, SSH connection not established. URI: {}".format(ssh_mongo_uri)
     return ssh_mongo_uri
