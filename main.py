@@ -6,6 +6,12 @@ from src import db
 from sacred import Experiment
 ex = db.init(Experiment())
 
+# Put all hyperparameters + paths in my_config().
+# Can handle basic python objects (strings, dicts, etc)
+# https://sacred.readthedocs.io/en/stable/configuration.html
+# More complex data objects (tensors, numpy arrays, pandas df)
+# should be initialized in init()
+
 @ex.config
 def my_config():
     # paths
@@ -21,7 +27,7 @@ def my_config():
     cuda   = False
 
     # Assertions
-    assert loss in ["adam"]
+    assert loss in ['adam']
 
 def init(seed, config, _run):
     # This gives dot access to all paths, hyperparameters, etc
