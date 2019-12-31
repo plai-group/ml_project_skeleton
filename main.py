@@ -15,8 +15,8 @@ ex = db.init(Experiment())
 @ex.config
 def my_config():
     # paths
-    data_path = ''
-    save_path = ''
+    model_dir = './models'
+    data_dir = './data'
 
     # Hyper params
     lr   = 0.001
