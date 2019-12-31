@@ -50,14 +50,16 @@ def init(seed, config, _run):
 
 # Send metric to database
 @ex.capture
-def log_scalar(name, scalar, step=None, _run=None):
-    assert np.isscalar(scalar) # Tensors, numpy arrays, etc wont work
-    if step is not None:
-        print("Epoch: {} - {}: {}".format(step, name, scalar))
-        _run.log_scalar(name, scalar, step)
-    else:
-        print("{}: {}".format(name, scalar))
-        _run.log_scalar(name, scalar)
+def log_scalar(_run=None, **kwargs):
+    assert "step" in kwargs, 'Step must be included in kwargs'
+    step = kwargs.pop('step')
+
+    for k, v in kwargs.items():
+        _run.log_scalar(k, float(v), step)
+
+    loss_string = " ".join(("{}: {:.4f}".format(*i) for i in kwargs.items()))
+    print(f"Epoch: {step} - {loss_string}")
+
 
 # Main training loop
 def train(args):
