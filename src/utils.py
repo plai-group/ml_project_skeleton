@@ -11,10 +11,3 @@ def seed_all(seed):
     random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
-
-
-def print_settings(args):
-    print("==============SETTINGS================")
-    pprint(args.__dict__)
-    print("--------------------------------------")
-
