@@ -2,7 +2,7 @@ import sacred
 import numpy as np
 from types import SimpleNamespace
 from src.utils import seed_all, print_settings
-from src import db
+from src import db, assertions
 from sacred import Experiment
 ex = db.init(Experiment())
 
@@ -15,8 +15,8 @@ ex = db.init(Experiment())
 @ex.config
 def my_config():
     # paths
-    data_path = ''
-    save_path = ''
+    model_dir = './models'
+    data_dir = './data'
 
     # Hyper params
     lr   = 0.001
@@ -26,20 +26,16 @@ def my_config():
     epochs = 10
     cuda   = False
 
-    # Assertions
-    assert loss in ['adam']
 
 def init(seed, config, _run):
     # This gives dot access to all paths, hyperparameters, etc
     args = SimpleNamespace(**config)
+    assertions.validate_hypers(args)
+    args.data_path = assertions.validate_dataset_path(args)
 
     # Seed everything
     seed_all(seed)
     args.seed = seed
-
-    # Print run settings
-    # (Better to use sacred's -p flag)
-    # print_settings(args)
 
     # This gives global access to sacred's '_run' object without having to capture functions
     args._run = _run
