@@ -1,10 +1,18 @@
+import os
+import sys
 import sacred
 import numpy as np
 from types import SimpleNamespace
-from src.utils import seed_all, print_settings
-from src import db, assertions
+from src.utils import seed_all
+from src import assertions
 from sacred import Experiment
-ex = db.init(Experiment())
+
+import wandb
+ex = Experiment()
+wandb.init(project="my-test-project", sync_tensorboard=True)
+
+if '--unobserved' in sys.argv:
+    os.environ['WANDB_MODE'] = 'dryrun'
 
 # Put all hyperparameters + paths in my_config().
 # Can handle basic python objects (strings, dicts, etc)
@@ -31,37 +39,29 @@ def init(seed, config, _run):
     # This gives dot access to all paths, hyperparameters, etc
     args = SimpleNamespace(**config)
     assertions.validate_hypers(args)
+    wandb.config.update(config)
+
     args.data_path = assertions.validate_dataset_path(args)
 
     # Seed everything
     seed_all(seed)
     args.seed = seed
 
-    # This gives global access to sacred's '_run' object without having to capture functions
-    args._run = _run
-
     # Other init stuff here (cuda, etc)
     return args
 
 
-# Send metric to database
-@ex.capture
-def log_scalar(_run=None, **kwargs):
-    assert "step" in kwargs, 'Step must be included in kwargs'
-    step = kwargs.pop('step')
-
-    for k, v in kwargs.items():
-        _run.log_scalar(k, float(v), step)
-
+def log_scalar(**kwargs):
+    wandb.log(kwargs)
     loss_string = " ".join(("{}: {:.4f}".format(*i) for i in kwargs.items()))
-    print(f"Epoch: {step} - {loss_string}")
+    print(f"{loss_string}")
 
 
 # Main training loop
 def train(args):
     loss = 0
     for epoch in range(args.epochs):
-        log_scalar("loss", loss, step=epoch)
+        log_scalar(loss=loss, step=epoch)
         loss += 1
     return loss
 
