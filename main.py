@@ -6,19 +6,17 @@ from types import SimpleNamespace
 from src.utils import seed_all
 from src import assertions
 from sacred import Experiment
-
 import wandb
-ex = Experiment()
-wandb.init(project="my-test-project", sync_tensorboard=True)
 
+ex = Experiment()
 if '--unobserved' in sys.argv:
     os.environ['WANDB_MODE'] = 'dryrun'
 
+# Use sacred for command line interface + hyperparams
+# Use wandb for experiment tracking monitoring
+
 # Put all hyperparameters + paths in my_config().
-# Can handle basic python objects (strings, dicts, etc)
-# https://sacred.readthedocs.io/en/stable/configuration.html
-# More complex data objects (tensors, numpy arrays, pandas df)
-# should be initialized in init()
+# and more complex data objects in init()
 
 @ex.config
 def my_config():
@@ -39,7 +37,10 @@ def init(seed, config, _run):
     # This gives dot access to all paths, hyperparameters, etc
     args = SimpleNamespace(**config)
     assertions.validate_hypers(args)
-    wandb.config.update(config)
+
+    wandb.init(project="my-test-project",
+               config=config,
+               tags=[_run.experiment_info['name']])
 
     args.data_path = assertions.validate_dataset_path(args)
 
@@ -69,6 +70,6 @@ def train(args):
 def experiment(_seed, _config, _run):
     args = init(_seed, _config, _run)
     result = train(args)
-    # Whatever is returned from @ex.automain will be stored in the 'result' column in omniboard
+
     return result
 
