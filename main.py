@@ -4,16 +4,19 @@ import sacred
 import numpy as np
 from types import SimpleNamespace
 from src.utils import seed_all
-from src import assertions
+from src import assertions, data_handler, model_handler
+import ml_helpers as mlh
 from sacred import Experiment
 import wandb
-
-ex = Experiment()
-if '--unobserved' in sys.argv:
-    os.environ['WANDB_MODE'] = 'dryrun'
+from time import sleep
 
 # Use sacred for command line interface + hyperparams
-# Use wandb for experiment tracking monitoring
+# Use wandb for experiment tracking
+
+ex = Experiment()
+WANDB_PROJECT_NAME = 'my_project_name'
+if '--unobserved' in sys.argv:
+    os.environ['WANDB_MODE'] = 'dryrun'
 
 # Put all hyperparameters + paths in my_config().
 # and more complex data objects in init()
@@ -30,46 +33,44 @@ def my_config():
 
     # Training settings
     epochs = 10
+    seed   = 0
     cuda   = False
 
 
-def init(seed, config, _run):
+def init(config):
     # This gives dot access to all paths, hyperparameters, etc
     args = SimpleNamespace(**config)
     assertions.validate_hypers(args)
 
-    wandb.init(project="my-test-project",
-               config=config,
-               tags=[_run.experiment_info['name']])
+    args = mlh.detect_cuda(args)
+    mlh.seed_all(args.seed)
 
-    args.data_path = assertions.validate_dataset_path(args)
+    # get data
+    args.data = data_handler.get_dataset(args)
 
-    # Seed everything
-    seed_all(seed)
-    args.seed = seed
+    # get model
+    args.model = model_handler.get_model(args)
 
-    # Other init stuff here (cuda, etc)
     return args
-
-
-def log_scalar(**kwargs):
-    wandb.log(kwargs)
-    loss_string = " ".join(("{}: {:.4f}".format(*i) for i in kwargs.items()))
-    print(f"{loss_string}")
-
 
 # Main training loop
 def train(args):
     loss = 0
-    for epoch in range(args.epochs):
-        log_scalar(loss=loss, step=epoch)
+
+    metric_logger = mlh.MetricLogger(wandb=wandb)
+
+    for epoch in metric_logger.step(range(args.epochs)):
         loss += 1
+        metric_logger.update(loss=loss, step=epoch)
+        sleep(1)
+
     return loss
 
+
 @ex.automain
-def experiment(_seed, _config, _run):
-    args = init(_seed, _config, _run)
-    result = train(args)
-
-    return result
-
+def command_line_entry(_run,_config):
+    wandb_run = wandb.init(project = WANDB_PROJECT_NAME,
+                            config = _config,
+                              tags = [_run.experiment_info['name']])
+    args = init(_config)
+    train(args)

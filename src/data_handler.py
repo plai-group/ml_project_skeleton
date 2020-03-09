@@ -1,2 +1,4 @@
-def hello_world():
-    print("Imported data handler successfully")
+def get_dataset(args):
+    # place conditionals here
+    data = 1
+    return data
