@@ -1,1 +1,1 @@
-Machine learning project skeleton using sacred.
+Machine learning project skeleton using sacred + wandb.
