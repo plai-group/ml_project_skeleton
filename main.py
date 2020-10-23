@@ -1,9 +1,7 @@
 import os
 import sys
-import sacred
-import numpy as np
-from types import SimpleNamespace
-from src.utils import seed_all
+
+from ml_helpers import add_home, default_init
 from src import assertions, data_handler, model_handler
 import ml_helpers as mlh
 from sacred import Experiment
@@ -24,8 +22,12 @@ if '--unobserved' in sys.argv:
 @ex.config
 def my_config():
     # paths
-    model_dir = './models'
-    data_dir = './data'
+    home_dir = '.' # required by job submitter, don't modify
+    artifact_dir = './artifacts/' # required by job submitter, don't modify
+
+    # relative to home_dir
+    data_dir = '/data'
+    weights_file = '/assets/example.csv'
 
     # Hyper params
     lr   = 0.001
@@ -39,7 +41,8 @@ def my_config():
 
 def init(config):
     # This gives dot access to all paths, hyperparameters, etc
-    args = SimpleNamespace(**config)
+    args = default_init(config)
+    args.data_dir, args.weights_file = add_home(args.home_dir, args.data_dir,  args.weights_file)
     assertions.validate_hypers(args)
 
     args = mlh.detect_cuda(args)

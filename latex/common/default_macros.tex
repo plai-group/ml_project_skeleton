@@ -1,0 +1,154 @@
+% cleveref
+\Crefname{algocf}{Algorithm}{Algorithms}
+\crefname{algorithm}{Algorithm}{Algorithms}
+\crefname{equation}{Equation}{Equations}
+\crefname{figure}{Figure}{Figure}
+\crefname{section}{§}{§§}
+\Crefname{section}{§}{§§}
+\crefformat{equation}{(#2#1#3)}
+\crefformat{section}{§#2#1#3}
+
+
+% common math words
+% Misc
+\DeclareMathOperator*{\argmin}{arg\,min} % * allows typesetting beneath
+\DeclareMathOperator*{\argmax}{arg\,max} % * allows typesetting beneath
+\newcommand{\given}{\lvert}
+
+% Distributions
+\DeclareMathOperator{\N}{\mathcal{N}}
+% \DeclareMathOperator{\U}{\mathcal{U}}
+\DeclareMathOperator{\E}{\mathbb{E}}
+\DeclareMathOperator{\R}{\mathcal{R}}
+\DeclareMathOperator{\Cov}{\mathrm{Cov}}
+\DeclareMathOperator{\Var}{\mathrm{Var}}
+\DeclareMathOperator{\std}{\mathrm{std}}
+
+
+% -- Bold Vectors --
+% Greek
+\DeclareMathOperator{\vzero}{\mathbf{0}}
+\DeclareMathOperator{\vone}{\mathbf{1}}
+
+\DeclareMathOperator{\valpha}{\mathbf{\alpha}}
+\DeclareMathOperator{\vbeta}{\mathbf{\beta}}
+\DeclareMathOperator{\vchi}{\mathbf{\chi}}
+\DeclareMathOperator{\vdelta}{\mathbf{\delta}}
+\DeclareMathOperator{\vDelta}{\mathbf{\Delta}}
+\DeclareMathOperator{\vepsilon}{\mathbf{\epsilon}}
+\DeclareMathOperator{\veta}{\mathbf{\eta}}
+\DeclareMathOperator{\vgamma}{\mathbf{\gamma}}
+\DeclareMathOperator{\vmu}{\mathbf{\mu}}
+\DeclareMathOperator{\vlambda}{\mathbf{\lambda}}
+\DeclareMathOperator{\vLambda}{\mathbf{\Lambda}}
+\DeclareMathOperator{\vLambdaBar}{\mathbf{\vLambda}}
+\DeclareMathOperator{\vrho}{\mathbf{\rho}}
+\DeclareMathOperator{\vphi}{\mathbf{\phi}}
+\DeclareMathOperator{\vPhi}{\mathbf{\Phi}}
+\DeclareMathOperator{\vpi}{\mathbf{\pi}}
+\DeclareMathOperator{\vpsi}{\mathbf{\psi}}
+\DeclareMathOperator{\vPsi}{\mathbf{\Psi}}
+\DeclareMathOperator{\vtheta}{\mathbf{\theta}}
+\DeclareMathOperator{\vTheta}{\mathbf{\Theta}}
+\DeclareMathOperator{\vsigma}{\mathbf{\sigma}}
+\DeclareMathOperator{\vSigma}{\mathbf{\Sigma}}
+\DeclareMathOperator{\vOmega}{\mathbf{\Omega}}
+\DeclareMathOperator{\vtau}{\mathbf{\tau}}
+\DeclareMathOperator{\vxi}{\mathbf{\xi}}
+
+
+% lower case
+\DeclareMathOperator{\va}{\mathbf{a}}
+\DeclareMathOperator{\vb}{\mathbf{b}}
+\DeclareMathOperator{\vc}{\mathbf{c}}
+\DeclareMathOperator{\vd}{\mathbf{d}}
+\DeclareMathOperator{\ve}{\mathbf{e}}
+\DeclareMathOperator{\vo}{\mathbf{o}}
+\DeclareMathOperator{\vi}{\mathbf{i}}
+\DeclareMathOperator{\vf}{\mathbf{f}}
+\DeclareMathOperator{\vg}{\mathbf{g}}
+\DeclareMathOperator{\vh}{\mathbf{h}}
+\DeclareMathOperator{\vj}{\mathbf{j}}
+\DeclareMathOperator{\vk}{\mathbf{k}}
+\DeclareMathOperator{\vm}{\mathbf{m}}
+\DeclareMathOperator{\vn}{\mathbf{n}}
+\DeclareMathOperator{\vp}{\mathbf{p}}
+\DeclareMathOperator{\vq}{\mathbf{q}}
+\DeclareMathOperator{\vr}{\mathbf{r}}
+\DeclareMathOperator{\vs}{\mathbf{s}}
+\DeclareMathOperator{\vt}{\mathbf{t}}
+\DeclareMathOperator{\vu}{\mathbf{u}}
+\DeclareMathOperator{\vv}{\mathbf{v}}
+\DeclareMathOperator{\vw}{\mathbf{w}}
+\DeclareMathOperator{\vx}{\mathbf{x}}
+\DeclareMathOperator{\vy}{\mathbf{y}}
+\DeclareMathOperator{\vz}{\mathbf{z}}
+
+% upper case
+\DeclareMathOperator{\vA}{\mathbf{A}}
+\DeclareMathOperator{\vB}{\mathbf{B}}
+\DeclareMathOperator{\vC}{\mathbf{C}}
+\DeclareMathOperator{\vD}{\mathbf{D}}
+\DeclareMathOperator{\vE}{\mathbf{E}}
+\DeclareMathOperator{\vF}{\mathbf{F}}
+\DeclareMathOperator{\vG}{\mathbf{G}}
+\DeclareMathOperator{\vH}{\mathbf{H}}
+\DeclareMathOperator{\vI}{\mathbf{I}}
+\DeclareMathOperator{\vJ}{\mathbf{J}}
+\DeclareMathOperator{\vK}{\mathbf{K}}
+\DeclareMathOperator{\vL}{\mathbf{L}}
+\DeclareMathOperator{\vM}{\mathbf{M}}
+\DeclareMathOperator{\vN}{\mathbf{N}}
+\DeclareMathOperator{\vO}{\mathbf{O}}
+\DeclareMathOperator{\vP}{\mathbf{P}}
+\DeclareMathOperator{\vQ}{\mathbf{Q}}
+\DeclareMathOperator{\vR}{\mathbf{R}}
+\DeclareMathOperator{\vS}{\mathbf{S}}
+\DeclareMathOperator{\vT}{\mathbf{T}}
+\DeclareMathOperator{\vU}{\mathbf{U}}
+\DeclareMathOperator{\vV}{\mathbf{V}}
+\DeclareMathOperator{\vW}{\mathbf{W}}
+\DeclareMathOperator{\vX}{\mathbf{X}}
+\DeclareMathOperator{\vY}{\mathbf{Y}}
+\DeclareMathOperator{\vZ}{\mathbf{Z}}
+
+% Derivatives
+\DeclareMathOperator{\vda}{d\mathbf{a}}
+\DeclareMathOperator{\vdb}{d\mathbf{b}}
+\DeclareMathOperator{\vdc}{d\mathbf{c}}
+\DeclareMathOperator{\vdd}{d\mathbf{d}}
+\DeclareMathOperator{\vde}{d\mathbf{e}}
+\DeclareMathOperator{\vdo}{d\mathbf{o}}
+\DeclareMathOperator{\vdi}{d\mathbf{i}}
+\DeclareMathOperator{\vdf}{d\mathbf{f}}
+\DeclareMathOperator{\vdg}{d\mathbf{g}}
+\DeclareMathOperator{\vdh}{d\mathbf{h}}
+\DeclareMathOperator{\vdj}{d\mathbf{j}}
+\DeclareMathOperator{\vdk}{d\mathbf{k}}
+\DeclareMathOperator{\vdm}{d\mathbf{m}}
+\DeclareMathOperator{\vdn}{d\mathbf{n}}
+\DeclareMathOperator{\vdp}{d\mathbf{p}}
+\DeclareMathOperator{\vdq}{d\mathbf{q}}
+\DeclareMathOperator{\vdr}{d\mathbf{r}}
+\DeclareMathOperator{\vds}{d\mathbf{s}}
+\DeclareMathOperator{\vdt}{d\mathbf{t}}
+\DeclareMathOperator{\vdu}{d\mathbf{u}}
+\DeclareMathOperator{\vdv}{d\mathbf{v}}
+\DeclareMathOperator{\vdw}{d\mathbf{w}}
+\DeclareMathOperator{\vdx}{d\mathbf{x}}
+\DeclareMathOperator{\vdy}{d\mathbf{y}}
+\DeclareMathOperator{\vdz}{d\mathbf{z}}
+
+% cleveref
+\Crefname{algocf}{Algorithm}{Algorithms}
+\crefname{algorithm}{Algorithm}{Algorithms}
+\crefname{equation}{Equation}{Equations}
+\crefname{figure}{Figure}{Figure}
+\crefname{section}{§}{§§}
+\Crefname{section}{§}{§§}
+\crefformat{equation}{(#2#1#3)}
+
+% theorems
+\newtheorem{theorem}{Theorem}
+\newtheorem{claim}{Claim}
+\newtheorem{lemma}{Lemma}
