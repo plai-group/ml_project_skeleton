@@ -1,7 +1,5 @@
 import os
 import sys
-
-from ml_helpers import add_home, default_init
 from src import assertions, data_handler, model_handler
 import ml_helpers as mlh
 from sacred import Experiment
@@ -27,7 +25,7 @@ def my_config():
 
     # relative to home_dir
     data_dir = '/data'
-    weights_file = '/assets/example.csv'
+    some_file = '/assets/example.csv'
 
     # Hyper params
     lr   = 0.001
@@ -39,14 +37,13 @@ def my_config():
     cuda   = False
 
 
+# put all initialization logic here
 def init(config):
     # This gives dot access to all paths, hyperparameters, etc
-    args = default_init(config)
-    args.data_dir, args.weights_file = add_home(args.home_dir, args.data_dir,  args.weights_file)
-    assertions.validate_hypers(args)
+    args = mlh.default_init(config)
 
-    args = mlh.detect_cuda(args)
-    mlh.seed_all(args.seed)
+    # This makes all paths point in the right place
+    args.data_dir, args.some_file = mlh.add_home(args.home_dir, args.data_dir, args.some_file)
 
     # get data
     args.data = data_handler.get_dataset(args)
@@ -70,6 +67,8 @@ def train(args):
     return loss
 
 
+# Don't touch this function! If you think you need to modify this function
+# that's a red flag you're about to do something the hard way, pause and reassess
 @ex.automain
 def command_line_entry(_run,_config):
     wandb_run = wandb.init(project = WANDB_PROJECT_NAME,
