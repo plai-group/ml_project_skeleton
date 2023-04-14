@@ -1,1 +1,120 @@
-\section{Introduction}
+\newcommand{\joint}{{p(\vx, \vz)}}
+\newcommand{\px}{{p(\vx)}}
+\newcommand{\pz}{{p(\vz)}}
+\newcommand{\pxgivenz}{{p(\vx|\vz)}}
+\newcommand{\pzx}{{p_{\theta}(\vz| \vx)}}
+\newcommand{\qzx}{{q_{\phi}(\vz|\vx)}}
+
+\newcommand{\prop}{q_{\text{prop}}}
+\newcommand{\tprop}{\tilde{q}_{\text{prop}}}
+\newcommand{\Zprop}{ \mathcal{Z}_{\text{prop}}}
+\newcommand{\tgt}{p_{\text{tgt}}}
+\newcommand{\ttgt}{\tilde{p}_{\text{tgt}}}
+\newcommand{\Ztgt}{ \mathcal{Z}_{\text{tgt}}}
+\newcommand{\kl}{{\text{KL}}}
+% \newcommand{\pxgz}{{p_{\theta}(\vx|\vz)}}
+% \newcommand{\qd}{{{q}(\vx)}}%{{q_{data}(\vx)}}
+% \newcommand{\qz}{{q(\vz)}} 
+% \newcommand{\elbo}{{\mathcal{L}_{\text{\tiny ELBO}}}}
+% \newcommand{\qzrd}{{q_{\beta}(\vz)}} 
+% %\newcommand{\qz}{{\pi_{\beta}(\vz)}}
+
+
+
+\newacronym{ELBO}{elbo}{evidence lower bound}
+\newacronym{EUBO}{eubo}{evidence upper bound}
+\newacronym{IWAE}{iwae}{importance weighted auto encoder}
+\newacronym{GIWAE}{giwae}{Generalized IWAE}
+\newacronym{SNIS}{snis}{self-normalized importance sampling}
+
+\section{Background}
+\label{background}
+\subsection{Mutual Information Bounds}
+
+The mutual information between two random variables $\vx$ and $\vz$ is defined 
+\begin{align}
+\label{eq:MI}
+    \mathbf{I}(\vx ; \vz) := \E_{\joint}\left[\log \frac{\joint}{\px \pz}\right] = \mathcal{H}(\vx) - \mathcal{H}(\vx|\vz) = \E_{\joint}\left[\log \pxgivenz\right] - \E_{\px} \left[\log \px\right],
+\end{align}
+where $\mathcal{H}(\vx)$ and $\mathcal{H}(\vx|\vz)$ represent the entropy and conditional entropy of $\px$ and $\pxgivenz$, respectively. The mutual information represents the reduction in uncertainty of random variable $\vx$ given knowledge of random variable $\vz$, with independent RV's having zero mutual information.
+
+One can obtain variational bounds of MI by substituting into \cref{eq:MI} variational bounds of $\log \px$. For instance, substituting in the well-known \gls{ELBO} and \gls{EUBO} bounds 
+\begin{align}
+\label{eq:logpx}
+\E_{\qzx}\left[\log \frac{\joint}{\qzx}\right] \le \log \px \le \E_{\pzx}\left[\frac{\joint}{\qzx}\right] \phantom{- \mathcal{H}(\vx|\vz),} 
+\end{align}
+one arrives at 
+\begin{align}
+     \E_{\joint}\left[\frac{\qzx}{\pz}\right] \le \mathbf{I}(\vx ; \vz) \le \E_{\px}\E_{\qzx}\left[\log \frac{\qzx}{\joint}\right] - \mathcal{H}(\vx|\vz),
+\end{align}
+where the LHS is the well-known Barber-Agakov lower bound (CITE) and the RHS is the corresponding Barber-Agakov upper bound. Note that because we subtract the $\mathcal{H}(\vx)$ entropy term in the mutual information expression, lower bounds on $ \log \px$ translate to upper bounds on the mutual information and vice versa. 
+
+We can generalize \cref{eq:logpx} to generic target and proposal distributions which will allow us to construct alternate bounds on the mutual information using multiple samples, as in the case of \gls{IWAE}. In general, for $\prop = \tprop / \Zprop$ and $\tgt = \ttgt / \Ztgt$, with $\Ztgt / \Zprop = \log \px$ we have 
+\begin{alignat}{3}
+    \E_{\prop}\left[\log \frac{\ttgt}{\tprop}\right]  &= \E_{\prop}\left[\log \frac{\tgt}{\prop}\right] &+~ \E_{\prop}\left[\log \frac{\Ztgt}{\Zprop}\right] &=  \log \px - \kl[\prop || \tgt]\\
+    \E_{\tgt}\left[\log \frac{\ttgt}{\tprop}\right] &= \E_{\tgt}\left[\log \frac{\tgt}{\prop}\right] &+~ \E_{\tgt}\left[\log \frac{\Ztgt}{\Zprop}\right] &=  \log \px + \kl[\tgt || \prop] 
+\end{alignat}
+Because of the non-negativity of the KL divergence, we have the following bounds on the log evidence
+\begin{align}
+    \E_{\prop}\left[\log \frac{\ttgt}{\tprop}\right] \le \log \px \le \E_{\tgt}\left[\log \frac{\ttgt}{\tprop}\right].
+\end{align}
+which can then be used to bound the mutual information in \cref{eq:MI} In the next section we'll derive the \gls{GIWAE} bound through careful choice of $\prop$ and $\tgt$ which incorporates in an energy function, and which can be used when the full joint density $\joint$ is unavailable, as in the case of representation learning.  
+
+\subsection{Generalized IWAE}
+
+We can improve upon the Barber-Agakov bounds by considering multiple samples from the proposal distribution, as in the case of \gls{IWAE}, which uses a K-sample proposal and target distributions defined as \alert{need to talk to rob to get intuition for $\ttgt$, and why summation is allowed to disappear in posterior expectation}
+\begin{align}
+    &\prop^{\text{iwae}}(\vz^{1:K}|\vx) = \prod_{k=1}^K q_{\phi}(\vz^k|\vx) \\
+    & \ttgt^{\text{iwae}}(\vx, \vz^{1:K}) = \frac{1}{K} \sum_{s=1}^K p_{\theta}(\vx, \vz^s) \prod_{k\ne s}^K q_{\phi}(\vz^k|\vx)\\
+    & \tgt^{\text{iwae}}(\vz^{1:K}|\vx) = \frac{\ttgt^{\text{iwae}}(\vx, \vz^{1:K})}{\px} = \frac{1}{K} \sum_{s=1}^K p_{\theta}(\vz^s|\vx) \prod_{k\ne s}^K q_{\phi}(\vz^k|\vx)
+\end{align}
+where the unnormalized \gls{IWAE} target distribution is defined as a uniform mixture over K components, with the $k$'th sample coming from $p(\vx,\vz)$ and the remainder from $q(\vz|\vx)$, similarly to how sampling is performed in the wake-phi update in the reweighted wake sleep algorithm \alert{cite tuananh}. The log ratio reduces to the correct \gls{IWAE} expression 
+\begin{align}
+    \log \frac{\ttgt}{\tprop} &= \log \frac{\frac{1}{K} \sum_{s=1}^K p_{\theta}(\vx, \vz^s) \prod_{k\ne s}^K q_{\phi}(\vz^k|\vx)}{\prod_{k=1}^K q_{\phi}(\vz^k|\vx)} = \log \frac{1}{K} \sum_{s=1}^K \frac{p_{\theta}(\vx, \vz^s)}{q_{\phi}(\vz^s|\vx)},
+\end{align}
+and the corresponding MI bound can be computed as 
+\begin{align}
+    \mathbf{I}(\vx ; \vz) &=  \E_{\joint}\left[\log \pxgivenz\right] - \E_{\px} \left[\log \px\right]\\ 
+    &\ge  \E_{\joint}\left[\log \pxgivenz\right] - \E_{\px} \left[\E_{\tgt}\left[\log \frac{\ttgt}{\tprop}\right]\right] \\ 
+    &\ge  \E_{p(\vx, \vz^1)}\E_{\prod_{k=2}^K q_{\phi}(\vz^k|\vx)}\left[\log p(\vx|\vz^1) \right] - \E_{\px} \E_{p(\vz^1|\vx)\prod_{k=2}^K q_{\phi}(\vz^k|\vx)}\left[ \log \frac{1}{K} \sum_{k=1}^K \frac{p_{\theta}(\vx, \vz^k)}{q_{\phi}(\vz^k|\vx)} \right]\\
+    &= \E_{p(\vx, \vz^1)}\E_{\prod_{k=2}^K q_{\phi}(\vz^k|\vx)}\left[\frac{\log p(\vx| \vz^1)}{\frac{1}{K} \sum_{k=1}^K \frac{p_{\theta}(\vx, \vz^k)}{q_{\phi}(\vz^k|\vx)}}\right] \label{eq:iwae-mi-bound}.
+\end{align}
+The \gls{GIWAE} objective extends \gls{IWAE} through use of a uniform index variable $\mathcal{U}(s) = 1/K$ for $s \in \left\{1, 2, ..., K\right\}$ that specifies which sample $\vz^{s} \sim p(\vz^{s}|\vx)$ is drawn from the true posterior and which samples $\vz^{-s} \sim q(\vz^{-s}|\vx)$ are drawn from the proposal. This leads to a joint distribution over $(\vx, \vz^{1:K}, s)$ and posterior over $s$ defined as 
+\begin{align}
+    \ttgt^{\text{giwae}}(\vx, \vz^{1:K}, s) &= p(s)p(\vx, \vz^{1:K}| s) = \frac{1}{K} p_{\theta}(\vx, \vz^s) \prod_{k\ne s}^K q_{\phi}(\vz^k|\vx)\\
+    \tgt^{\text{giwae}}(\vz^{1:K}, s | \vx ) &= \frac{p(\vx, \vz^{1:K}, s)}{p(\vx)} = \frac{1}{K} p_{\theta}(\vz^s | \vx) \prod_{k\ne s}^K q_{\phi}(\vz^k|\vx)\\
+    \ttgt^{\text{giwae}}(s|\vx, \vz^{1:K}) &= \frac{\ttgt^{\text{giwae}}(\vx, \vz^{1:K},s)}{\sum_{s'=1}^K \ttgt^{\text{giwae}}(\vx, \vz^{1:K}, s')} = \frac{w^s}{\sum_{s'=1}^K w^{s'}} \quad \quad \text {for  } w^s = \frac{ p_{\theta}(\vx, \vz^s)}{q_{\phi}(\vz^s|\vx)}.
+\end{align}
+Inspired by the form of $\ttgt^{\text{giwae}}(s|\vx, \vz^{1:K})$ the \gls{GIWAE} objective considers drawing $s$ according to variational \gls{SNIS} weights defined using energy function $T_\phi(\vx,\vz)$
+\begin{align}
+    \prop^{\text{giwae}}(\vz^{1:K}, s|\vx) := q(s|\vx, \vz^{1:K})q(\vz^{1:K} |\vx) &= \left(\prod_{k=1}^K q_{\phi}(\vz^k|\vx)\right)q(s|\vx, \vz^{1:K})
+\end{align}
+where
+\begin{align}
+    q(s|\vx, \vz^{1:K}) &:= \frac{\exp\left(T_{\psi}\left(\vx, \vz^{s}\right)\right)}{\sum_{s'=1}^K \exp\left(T_{\psi}\left(\vx, \vz^{s'}\right)\right) }.
+\end{align}
+Similar calculations to \cref{eq:iwae-mi-bound} yield the corresponding \gls{GIWAE} lower bound 
+\begin{align}
+    \mathbf{I}(\vx ; \vz) - &\ge \mathbf{I}_{\text{GIWAE}_L} \\
+    &= \E_{p(\vx, \vz^1)}\left[\frac{\log q_{\phi}(\vz^1|\vx)}{p(\vz^1)}\right] + \E_{p(\vx, \vz^1)}\E_{\prod_{k=2}^K q_{\phi}(\vz^k|\vx)}\left[\log \frac{\exp\left(T_{\psi}\left(\vx, \vz^1\right)\right)}{\sum_{k=1}^K \exp\left(T_{\psi}\left(\vx, \vz^{k}\right)\right) }\right]
+\end{align}
+
+\alert{Missing intuition about why optimal energy function, which equals the true log importance weights up to constant, should learn to discriminate between positive and negative samples. }
+
+\alert{note somewhere that giwae is strictly worse than iwae (cite giwae paper), but doesn't require access to the density $p(\vx,\vz)$, only that we can sample from it. We therefore turn to the representation learning setting where these conditions are met.}
+
+\subsection{Information Bottleneck method}
+In the information bottleneck method we are interested in the following objective 
+\begin{align}
+    \max_{q_\psi,p_{\theta}} I(Z ; Y) - \beta I(Z ; X)
+\end{align}
+between random variables $X,Y$ and $Z$, where $Z$ is a stochastic encoding of the input source $X$, learned to be maximally informative about the target random variable $Y$, which could be for instance class labels. Expanding the first term and using the markov factorization $p(\vx,\vy,\vz) = p(\vz|\vx)p(\vy|\vx)p(\vx)$, the first term can be rewritten 
+\begin{align}
+    I(Z ; Y) &= \int p(\vy, \vz) \log \frac{p(\vy, \vz)}{p(\vz)p(\vy)} d\vz d \vy \\
+    &= \int p(\vx, \vy, \vz) \log \frac{p(\vy|\vz)}{p(\vy)} d\vz d\vy d\vz \\
+    &= \E_{p(\vx, \vy) p_{\phi}(\vz|\vx)} \left[\log \frac{p(\vy|\vz)}{p(\vy)}\right]\label{eq:MI-IZY},
+\end{align}
+where $p_{\phi}(\vz|\vx)$ is a stochastic encoder parameterized by $\phi$, and $p(\vy|\vz)$ is specified in terms of the encoder and markov chain as 
+\begin{align}
+    p(\vy|\vz) = \int p(\vy, \vx|\vz) d \vx = \int p(\vy| \vx) p(\vx|\vz) d \vx = \int \frac{p(\vy|\vx)p_{\phi}(\vz|\vx)p(\vx)}{p(\vz)}  d \vx
+\end{align}
